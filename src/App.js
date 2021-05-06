@@ -6,15 +6,15 @@ import "./App.css";
 export default function App() {
   const [dataArray, setDataArray] = useState([]);
   const [pageNumber, setPageNumber] = useState(1);
-  const [count, setcount] = useState(0);
 
   useEffect(() => {
     const apiCallFunction = async () => {
+      console.log("pageNumber" + pageNumber);
       const apiData = await fetch(
         `https://jsonplaceholder.typicode.com/posts?_limit=${5}&_page=${pageNumber}`
       );
       const apiDataJson = await apiData.json();
-      console.log({ apiDataJson });
+      console.log("json data foramt" + { apiDataJson });
 
       const dataArrayCopy = [...apiDataJson];
 
@@ -24,8 +24,50 @@ export default function App() {
     apiCallFunction();
   }, [pageNumber]);
 
+  let apiData = [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    0,
+    1,
+    2,
+    3,
+    4,
+    "D",
+    6,
+    7,
+    8,
+    9,
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    0
+  ];
+  const paginatedData = (page, limit) => {
+    const firstItem = page * limit - limit;
+    const lastItem = page * limit;
+    return apiData.slice(firstItem, lastItem);
+  };
+
+  console.log(paginatedData(3, 5));
+
   const MAX_PAGE_NUMBER = 20;
-  const pageNumberArray = new Array(20).fill(1).map((_, idx) => idx + 1);
+  const pageNumberArray = new Array(MAX_PAGE_NUMBER)
+    .fill(1)
+    .map((_, idx) => idx + 1);
   console.log(pageNumberArray);
 
   const handleNext = () => {
