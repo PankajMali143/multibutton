@@ -6,72 +6,43 @@ import "./App.css";
 export default function App() {
   const [dataArray, setDataArray] = useState([]);
   const [pageNumber, setPageNumber] = useState(1);
+  console.log(pageNumber);
+  const LIMIT = 5;
 
+  //let apiData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
+
+  const paginatedData = (page, limit) => {
+    const firstItem = page * limit - limit;
+    const lastItem = page * limit;
+    return dataArray.slice(firstItem, lastItem);
+  };
   useEffect(() => {
     const apiCallFunction = async () => {
-      console.log("pageNumber" + pageNumber);
-      const apiData = await fetch(
-        `https://jsonplaceholder.typicode.com/posts?_limit=${5}&_page=${pageNumber}`
-      );
-      const apiDataJson = await apiData.json();
-      console.log("json data foramt" + { apiDataJson });
-
-      const dataArrayCopy = [...apiDataJson];
-
+      const apiData = await fetch(`https://jsonplaceholder.typicode.com/todos`);
+      const apiDatajson = await apiData.json();
+      const dataArrayCopy = [...apiDatajson];
       setDataArray(dataArrayCopy);
     };
 
     apiCallFunction();
-  }, [pageNumber]);
+  }, []);
 
-  let apiData = [
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8,
-    9,
-    0,
-    1,
-    2,
-    3,
-    4,
-    "D",
-    6,
-    7,
-    8,
-    9,
-    0,
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8,
-    9,
-    0
-  ];
-  const paginatedData = (page, limit) => {
-    const firstItem = page * limit - limit;
-    const lastItem = page * limit;
-    return apiData.slice(firstItem, lastItem);
-  };
+  const paginatedDataArray = paginatedData(pageNumber, LIMIT);
+  console.log(paginatedDataArray);
 
-  console.log(paginatedData(3, 5));
-
-  const MAX_PAGE_NUMBER = 20;
+  const MAX_PAGE_NUMBER = Math.ceil(dataArray.length / LIMIT);
   const pageNumberArray = new Array(MAX_PAGE_NUMBER)
     .fill(1)
     .map((_, idx) => idx + 1);
   console.log(pageNumberArray);
 
+  console.log("paginated" + Math.ceil(paginatedDataArray.length / LIMIT));
   const handleNext = () => {
-    setPageNumber(pageNumber >= 20 ? pageNumber : pageNumber + 1);
+    setPageNumber(
+      pageNumber >= Math.ceil(dataArray.length / LIMIT)
+        ? pageNumber
+        : pageNumber + 1
+    );
   };
 
   const handleBack = () => {
@@ -81,7 +52,7 @@ export default function App() {
   return (
     <div className="App">
       <ul>
-        {dataArray.map((data, idx) => (
+        {paginatedDataArray.map((data, idx) => (
           <li className="data" key={idx}>
             {data.id}
           </li>
@@ -92,7 +63,10 @@ export default function App() {
         <button disabled={pageNumber === 1} onClick={handleBack}>
           Back
         </button>
-        <button disabled={pageNumber === 20} onClick={handleNext}>
+        <button
+          disabled={pageNumber === Math.ceil(dataArray.length / LIMIT)}
+          onClick={handleNext}
+        >
           Next
         </button>
       </div>
